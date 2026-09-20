@@ -1,0 +1,59 @@
+{
+  "name": "Clinic - Cron - Daily Reminders",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 8 * * *"
+            }
+          ]
+        }
+      },
+      "name": "Every Day at 8 AM",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [260, 300],
+      "id": "cron-remind-1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:8000/internal/send-reminders",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-internal-secret",
+              "value": "change-this-shared-secret"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Call Backend: Send Reminders",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [520, 300],
+      "id": "cron-remind-2"
+    }
+  ],
+  "connections": {
+    "Every Day at 8 AM": {
+      "main": [
+        [
+          {
+            "node": "Call Backend: Send Reminders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "notes": "The backend finds tomorrow's Confirmed appointments that haven't had a reminder yet, marks them, and calls the 'appointment-reminder' webhook per patient. Adjust the cron time if 8 AM doesn't fit."
+}

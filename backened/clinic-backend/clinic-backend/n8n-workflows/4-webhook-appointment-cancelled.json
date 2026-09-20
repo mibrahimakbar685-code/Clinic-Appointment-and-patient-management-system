@@ -1,0 +1,56 @@
+{
+  "name": "Clinic - Webhook - Appointment Cancelled",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "appointment-cancelled",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [260, 300],
+      "id": "wh-cancelled-1",
+      "webhookId": "appointment-cancelled"
+    },
+    {
+      "parameters": {
+        "fromEmail": "clinic@nowsherafamilyclinic.com",
+        "toEmail": "={{ $json.body.to }}",
+        "subject": "Your appointment has been cancelled",
+        "emailFormat": "text",
+        "text": "=Hello,\n\nYour appointment scheduled for {{ $json.body.appointment.slot_start }} has been CANCELLED.\n\nReason: {{ $json.body.reason }}\n\nPlease book a new slot on the website if you'd still like to see the doctor.\n\n- Nowshera Family Clinic",
+        "options": {}
+      },
+      "name": "Send Cancellation Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [520, 300],
+      "id": "wh-cancelled-2",
+      "credentials": {
+        "smtp": {
+          "id": "REPLACE_WITH_YOUR_SMTP_CREDENTIAL_ID",
+          "name": "Clinic SMTP"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Send Cancellation Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "notes": "Body received: { appointment: {...}, to: patient_email, reason: string }. Used for both leave-day cancellations and auto-expired Pending appointments — the 'reason' field tells you which."
+}

@@ -1,0 +1,56 @@
+{
+  "name": "Clinic - Webhook - Appointment Rejected",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "appointment-rejected",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [260, 300],
+      "id": "wh-rejected-1",
+      "webhookId": "appointment-rejected"
+    },
+    {
+      "parameters": {
+        "fromEmail": "clinic@nowsherafamilyclinic.com",
+        "toEmail": "={{ $json.body.to }}",
+        "subject": "Your appointment request was not accepted",
+        "emailFormat": "text",
+        "text": "=Hello,\n\nUnfortunately your appointment request for {{ $json.body.appointment.slot_start }} was not accepted by the doctor.\n\nPlease choose another available slot on the website.\n\n- Nowshera Family Clinic",
+        "options": {}
+      },
+      "name": "Send Rejection Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [520, 300],
+      "id": "wh-rejected-2",
+      "credentials": {
+        "smtp": {
+          "id": "REPLACE_WITH_YOUR_SMTP_CREDENTIAL_ID",
+          "name": "Clinic SMTP"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Send Rejection Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "notes": "Body received: { appointment: {...}, to: patient_email }."
+}

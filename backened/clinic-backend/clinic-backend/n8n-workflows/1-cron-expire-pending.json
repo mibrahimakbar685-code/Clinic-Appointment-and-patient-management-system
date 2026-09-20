@@ -1,0 +1,59 @@
+{
+  "name": "Clinic - Cron - Expire Pending Appointments",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 5
+            }
+          ]
+        }
+      },
+      "name": "Every 5 Minutes",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [260, 300],
+      "id": "cron-expire-1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:8000/internal/expire-pending",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-internal-secret",
+              "value": "change-this-shared-secret"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Call Backend: Expire Pending",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [520, 300],
+      "id": "cron-expire-2"
+    }
+  ],
+  "connections": {
+    "Every 5 Minutes": {
+      "main": [
+        [
+          {
+            "node": "Call Backend: Expire Pending",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "notes": "The backend endpoint itself finds expired Pending appointments, cancels them, and calls the 'appointment-cancelled' webhook per patient. This workflow just needs to fire the trigger on a schedule — no further nodes required."
+}

@@ -1,0 +1,56 @@
+{
+  "name": "Clinic - Webhook - Appointment Reminder",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "appointment-reminder",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [260, 300],
+      "id": "wh-reminder-1",
+      "webhookId": "appointment-reminder"
+    },
+    {
+      "parameters": {
+        "fromEmail": "clinic@nowsherafamilyclinic.com",
+        "toEmail": "={{ $json.body.to }}",
+        "subject": "Reminder: your appointment is tomorrow",
+        "emailFormat": "text",
+        "text": "=Hello,\n\nThis is a reminder that you have an appointment tomorrow at {{ $json.body.appointment.slot_start }}.\n\nSee you then!\n\n- Nowshera Family Clinic",
+        "options": {}
+      },
+      "name": "Send Reminder Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [520, 300],
+      "id": "wh-reminder-2",
+      "credentials": {
+        "smtp": {
+          "id": "REPLACE_WITH_YOUR_SMTP_CREDENTIAL_ID",
+          "name": "Clinic SMTP"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Send Reminder Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "notes": "Body received: { appointment: {...}, to: patient_email }. Fired once per appointment by the daily reminders cron endpoint (test case #10 expects exactly one reminder email)."
+}

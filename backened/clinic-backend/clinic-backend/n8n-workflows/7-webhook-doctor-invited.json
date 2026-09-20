@@ -1,0 +1,56 @@
+{
+  "name": "Clinic - Webhook - Doctor Invited",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "doctor-invited",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [260, 300],
+      "id": "wh-invited-1",
+      "webhookId": "doctor-invited"
+    },
+    {
+      "parameters": {
+        "fromEmail": "clinic@nowsherafamilyclinic.com",
+        "toEmail": "={{ $json.body.to }}",
+        "subject": "Welcome to Nowshera Family Clinic — set your password",
+        "emailFormat": "text",
+        "text": "=Hello Dr. {{ $json.body.full_name }},\n\nAn account has been created for you on the Nowshera Family Clinic system.\n\nSet your password using this link:\n{{ $json.body.link }}\n\nOnce set, you can sign in and add your working hours.\n\n- Nowshera Family Clinic",
+        "options": {}
+      },
+      "name": "Send Set-Password Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [520, 300],
+      "id": "wh-invited-2",
+      "credentials": {
+        "smtp": {
+          "id": "REPLACE_WITH_YOUR_SMTP_CREDENTIAL_ID",
+          "name": "Clinic SMTP"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Send Set-Password Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "notes": "Body received: { to: doctor_email, full_name: string, link: supabase_recovery_link }. Test case #2 checks this exact email."
+}
